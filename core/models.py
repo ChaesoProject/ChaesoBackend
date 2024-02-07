@@ -1,22 +1,53 @@
+from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 from django.db import models
 
 
-class User(models.Model):
+class CustomUserManager(BaseUserManager):
+    def create_user(self, cpf, password=None, **extra_fields):
+        if not cpf:
+            raise ValueError("CPF is required to create a user.")
+
+        user = self.model(cpf=cpf, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, cpf, password=None, **extra_fields):
+        user = self.create_user(cpf, password, **extra_fields)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
+
+
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    cpf = models.CharField(max_length=15, unique=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'cpf'
+
+    def __str__(self):
+        return self.cpf
+
+
+class Client(models.Model):
     name = models.CharField(max_length=40)
-    cpf = models.CharField(max_length=14)
     birthday = models.DateField()
     type = models.CharField(max_length=40)
 
     class Meta:
-        verbose_name = 'User'
-        verbose_name_plural = 'Users'
+        verbose_name = 'Client'
+        verbose_name_plural = 'Clients'
 
     def __str__(self):
-        return f'{self.name}, {self.cpf}'
+        return f'{self.name}'
 
 
 class Address(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='addresses')
     cep = models.CharField(max_length=10)
     street = models.CharField(max_length=100)
     number = models.IntegerField()
@@ -29,11 +60,11 @@ class Address(models.Model):
         verbose_name_plural = 'Addresses'
 
     def __str__(self):
-        return f'{self.user}, {self.street}'
+        return f'{self.client}, {self.street}'
 
 
 class Transporter(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    client = models.OneToOneField(Client, on_delete=models.CASCADE, related_name='transporter')
     cnh = models.CharField(max_length=20)
     category_cnh = models.CharField(max_length=5)
 
@@ -42,11 +73,11 @@ class Transporter(models.Model):
         verbose_name_plural = 'Transporters'
 
     def __str__(self):
-        return f'{self.user}, {self.cnh}'
-    
+        return f'{self.client}, {self.cnh}'
+
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='orders')
     transporter = models.ForeignKey(Transporter, on_delete=models.CASCADE)
     product = models.ForeignKey('Product', on_delete=models.CASCADE)
     date_order = models.DateField()
@@ -58,7 +89,7 @@ class Order(models.Model):
         verbose_name_plural = 'Orders'
 
     def __str__(self):
-        return f'{self.user}, {self.transporter}, {self.total_amount}'
+        return f'{self.client}, {self.transporter}, {self.total_amount}'
 
 
 class Product(models.Model):
@@ -73,3 +104,7 @@ class Product(models.Model):
 
     def __str__(self):
         return f'{self.name}, {self.value}'
+
+# Corrigir conflito de acesso reverso para grupos e permissões de usuário
+CustomUser._meta.get_field('groups').remote_field.related_name = 'user_groups'
+CustomUser._meta.get_field('user_permissions').remote_field.related_name = 'user_permissions_custom'
