@@ -1,10 +1,16 @@
 from django.contrib import admin
 from .models import CustomUser, Client, Address, Transporter, Order, Product
+from django.contrib.auth.admin import UserAdmin
 
 
-@admin.register(CustomUser)
-class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ('cpf', 'is_active', 'is_staff')
+class CustomUserAdmin(UserAdmin):
+    model = CustomUser
+    list_display = ['cpf', 'is_staff', 'is_active']
+    search_fields = ['cpf']
+    ordering = ['cpf']
+
+
+admin.site.register(CustomUser, CustomUserAdmin)
 
 
 @admin.register(Client)

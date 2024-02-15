@@ -34,9 +34,16 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class Client(models.Model):
+    CLIENT = 'client'
+    TRANSPORTER = 'transporter'
+    TYPE_CHOICES = [
+        (CLIENT, 'Client'),
+        (TRANSPORTER, 'Transporter'),
+    ]
+
     name = models.CharField(max_length=40)
     birthday = models.DateField()
-    type = models.CharField(max_length=40)
+    type = models.CharField(max_length=40, choices=TYPE_CHOICES)
 
     class Meta:
         verbose_name = 'Client'
