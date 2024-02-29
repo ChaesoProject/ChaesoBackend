@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'drf_spectacular',
     'core',
 
     'django_filters',
@@ -139,7 +139,7 @@ DJOSER = {
     'LOGIN_FIELD': 'cpf',
     'USER_CREATE_PASSWORD_RETYPE': True,
     'SERIALIZERS': {
-        'user_create': 'myapp.serializers.UserCreateSerializer', 
+        'user_create': 'core.serializers.CustomUserSerializer', 
     },
 }
 
@@ -156,4 +156,14 @@ REST_FRAMEWORK = {
         'rest_framework.throttling.AnonRateThrottle',
         'rest_framework.throttling.UserRateThrottle',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+AUTH_USER_MODEL = 'core.CustomUser'
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Chaeso API',
+    'DESCRIPTION': 'API com os endpoints e documentação de projeto acadêmico',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
 }
