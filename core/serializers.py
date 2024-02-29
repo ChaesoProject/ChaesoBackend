@@ -29,11 +29,45 @@ class AddressSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class ClientSerializer(serializers.ModelSerializer):
-    addresses = AddressSerializer(many=True, read_only=True)
+    user = CustomUserSerializer(many=False, read_only=True)
 
     class Meta:
         model = Client
         fields = '__all__'
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+
+        # verifica se já existe um cliente para este usuário
+        client = Client.objects.filter(user=user).first()
+        if client:
+            raise serializers.ValidationError("Cliente já existe para este usuário.")
+        
+        # campos obrigatórios
+        name = validated_data['name']
+        birthday = validated_data['birthday']
+        type = validated_data['type']
+
+        # criação do cliente
+        client = Client(
+            user=user,
+            name=name,
+            birthday=birthday,
+            type=type
+        )
+
+        # Verifica se há dados para o endereço
+        address_data = validated_data.get('address', None)
+        if address_data:
+            address_serializer = AddressSerializer(data=address_data)
+            address_serializer.is_valid(raise_exception=True)
+            address = address_serializer.save()
+            client.address = address
+
+        client.save()
+        return client
+
+    
 
 class TransporterSerializer(serializers.ModelSerializer):
     client = ClientSerializer()
