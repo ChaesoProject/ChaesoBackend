@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth import get_user_model
 from django.db import models
 
 
@@ -40,7 +41,7 @@ class Client(models.Model):
         (CLIENT, 'Client'),
         (TRANSPORTER, 'Transporter'),
     ]
-
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, blank=True, null=True)
     name = models.CharField(max_length=40)
     birthday = models.DateField()
     type = models.CharField(max_length=40, choices=TYPE_CHOICES)
