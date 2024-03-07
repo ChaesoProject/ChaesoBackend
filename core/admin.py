@@ -25,7 +25,7 @@ class TransporterAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('client', 'transporter', 'product', 'date_order', 'total_amount', 'status')
+    list_display = ('client', 'transporter', 'date_order', 'total_amount', 'status')
 
 
 @admin.register(Product)

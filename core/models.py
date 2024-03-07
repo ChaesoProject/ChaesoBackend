@@ -71,10 +71,10 @@ class Transporter(models.Model):
 class Order(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='orders')
     transporter = models.ForeignKey(Transporter, on_delete=models.CASCADE)
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
-    date_order = models.DateField()
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=50)
+    products = models.ManyToManyField('Product')
+    date_order = models.DateField(auto_now_add=True, null=True, blank=True)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    status = models.CharField(max_length=50, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Order'
@@ -89,10 +89,11 @@ class Product(models.Model):
     value = models.DecimalField(max_digits=10, decimal_places=2)
     weight_kg = models.CharField(max_length=100)
     photo = models.ImageField(upload_to='client_photos/', null=True, blank=True)
+    quantity = models.IntegerField(default=1)
 
     class Meta:
-            verbose_name = 'Product'
-            verbose_name_plural = 'Products'
+        verbose_name = 'Product'
+        verbose_name_plural = 'Products'
 
     def __str__(self):
         return f'{self.name}, {self.value}'
