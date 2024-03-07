@@ -35,16 +35,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class Client(models.Model):
-    CLIENT = 'client'
-    TRANSPORTER = 'transporter'
-    TYPE_CHOICES = [
-        (CLIENT, 'Client'),
-        (TRANSPORTER, 'Transporter'),
-    ]
     user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, blank=True, null=True)
     name = models.CharField(max_length=40)
     birthday = models.DateField()
-    type = models.CharField(max_length=40, choices=TYPE_CHOICES)
     cep = models.CharField(max_length=10)
     street = models.CharField(max_length=100)
     number = models.IntegerField()
@@ -61,7 +54,9 @@ class Client(models.Model):
     
 
 class Transporter(models.Model):
-    client = models.OneToOneField(Client, on_delete=models.CASCADE, related_name='transporter')
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE, blank=True, null=True)
+    name = models.CharField(max_length=40)
+    birthday = models.DateField()
     cnh = models.CharField(max_length=20)
     category_cnh = models.CharField(max_length=5)
 

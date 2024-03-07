@@ -15,12 +15,12 @@ admin.site.register(CustomUser, CustomUserAdmin)
 
 @admin.register(Client)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('name', 'birthday', 'type', 'street', 'city')
+    list_display = ('name', 'birthday', 'street', 'city')
 
 
 @admin.register(Transporter)
 class TransporterAdmin(admin.ModelAdmin):
-    list_display = ('client', 'cnh', 'category_cnh')
+    list_display = ('user', 'name', 'cnh')
 
 
 @admin.register(Order)

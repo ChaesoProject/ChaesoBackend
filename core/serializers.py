@@ -42,7 +42,6 @@ class ClientSerializer(serializers.ModelSerializer):
         # campos obrigatórios
         name = validated_data['name']
         birthday = validated_data['birthday']
-        type = validated_data['type']
         cep = validated_data['cep']
         street = validated_data['street']
         number = validated_data['number']
@@ -55,7 +54,6 @@ class ClientSerializer(serializers.ModelSerializer):
             user=user,
             name=name,
             birthday=birthday,
-            type=type,
             cep=cep,
             street=street,
             number=number,
