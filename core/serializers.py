@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import CustomUser, Client, Transporter, Order, Product
 
+
 class CustomUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
 
@@ -39,7 +40,6 @@ class ClientSerializer(serializers.ModelSerializer):
         if client:
             raise serializers.ValidationError("Cliente já existe para este usuário.")
         
-        # campos obrigatórios
         name = validated_data['name']
         birthday = validated_data['birthday']
         cep = validated_data['cep']
@@ -66,18 +66,44 @@ class ClientSerializer(serializers.ModelSerializer):
         return client
 
     
-
 class TransporterSerializer(serializers.ModelSerializer):
-    client = ClientSerializer()
-
+    user = CustomUserSerializer(many=False, read_only=True)
+    
     class Meta:
         model = Transporter
         fields = '__all__'
+    
+    def create(self, validated_data):
+        user = self.context['request'].user
+
+        # verifica se já existe um transporter para este usuário
+        transporter = Transporter.objects.filter(user=user).first()
+        if transporter:
+            raise serializers.ValidationError("Transporter já existe para este usuário.")
+        
+        name = validated_data['name']
+        birthday = validated_data['birthday']
+        cnh = validated_data['cnh']
+        category_cnh = validated_data['category_cnh']
+
+        # criação do transporter
+        transporter = Transporter(
+            user=user,
+            name=name,
+            birthday=birthday,
+            cnh=cnh,
+            category_cnh=category_cnh
+        )
+
+        transporter.save()
+        return transporter
+
 
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
+
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
