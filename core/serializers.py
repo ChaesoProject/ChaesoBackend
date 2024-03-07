@@ -43,22 +43,26 @@ class ClientSerializer(serializers.ModelSerializer):
         name = validated_data['name']
         birthday = validated_data['birthday']
         type = validated_data['type']
+        cep = validated_data['cep']
+        street = validated_data['street']
+        number = validated_data['number']
+        district = validated_data['district']
+        city = validated_data['city']
+        uf = validated_data['uf']
 
         # criação do cliente
         client = Client(
             user=user,
             name=name,
             birthday=birthday,
-            type=type
+            type=type,
+            cep=cep,
+            street=street,
+            number=number,
+            district=district,
+            city=city,
+            uf=uf
         )
-
-        # Verifica se há dados para o endereço
-        address_data = validated_data.get('address', None)
-        if address_data:
-            address_serializer = AddressSerializer(data=address_data)
-            address_serializer.is_valid(raise_exception=True)
-            address = address_serializer.save()
-            client.address = address
 
         client.save()
         return client
