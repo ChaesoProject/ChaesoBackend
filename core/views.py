@@ -116,3 +116,15 @@ class TransporterViewSet(viewsets.ModelViewSet):
             Token.objects.filter(user=user_instance).delete()
 
         return Response(serializer.data, status=status.HTTP_200_OK)  
+    
+
+class ProductViewSet(viewsets.ModelViewSet):
+    queryset = models.Product.objects.all()
+    serializer_class = serializers.ProductSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
