@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CustomUser, Client, Address, Transporter, Order, Product
+from .models import CustomUser, Client, Transporter, Order, Product
 
 class CustomUserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
@@ -22,11 +22,7 @@ class CustomUserSerializer(serializers.ModelSerializer):
             instance.save()
 
         return instance
-
-class AddressSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Address
-        fields = '__all__'
+    
 
 class ClientSerializer(serializers.ModelSerializer):
     user = CustomUserSerializer(many=False, read_only=True)

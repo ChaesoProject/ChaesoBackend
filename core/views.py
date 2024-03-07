@@ -66,3 +66,5 @@ class ClientViewSet(viewsets.ModelViewSet):
             Token.objects.filter(user=user_instance).delete()
 
         return Response(serializer.data, status=status.HTTP_200_OK)  
+    
+    

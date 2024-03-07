@@ -10,7 +10,6 @@ router = SimpleRouter()
 router.register('customuser', CustomUserViewSet)
 router.register('client', ClientViewSet)
 
-
 urlpatterns = [
     path('api/v1/', include(router.urls)),
     path('api/v1/admin/', admin.site.urls),

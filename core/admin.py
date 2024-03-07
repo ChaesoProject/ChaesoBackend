@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import CustomUser, Client, Address, Transporter, Order, Product
+from .models import CustomUser, Client, Transporter, Order, Product
 from django.contrib.auth.admin import UserAdmin
 
 
@@ -15,12 +15,7 @@ admin.site.register(CustomUser, CustomUserAdmin)
 
 @admin.register(Client)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('name', 'birthday', 'type')
-
-
-@admin.register(Address)
-class AddressAdmin(admin.ModelAdmin):
-    list_display = ('client', 'cep', 'street', 'number', 'district', 'city', 'uf')
+    list_display = ('name', 'birthday', 'type', 'street', 'city')
 
 
 @admin.register(Transporter)

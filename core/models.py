@@ -45,17 +45,6 @@ class Client(models.Model):
     name = models.CharField(max_length=40)
     birthday = models.DateField()
     type = models.CharField(max_length=40, choices=TYPE_CHOICES)
-
-    class Meta:
-        verbose_name = 'Client'
-        verbose_name_plural = 'Clients'
-
-    def __str__(self):
-        return f'{self.name}'
-
-
-class Address(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='addresses')
     cep = models.CharField(max_length=10)
     street = models.CharField(max_length=100)
     number = models.IntegerField()
@@ -64,12 +53,12 @@ class Address(models.Model):
     uf = models.CharField(max_length=2)
 
     class Meta:
-        verbose_name = 'Address'
-        verbose_name_plural = 'Addresses'
+        verbose_name = 'Client'
+        verbose_name_plural = 'Clients'
 
     def __str__(self):
-        return f'{self.client}, {self.street}'
-
+        return f'{self.name}'
+    
 
 class Transporter(models.Model):
     client = models.OneToOneField(Client, on_delete=models.CASCADE, related_name='transporter')
