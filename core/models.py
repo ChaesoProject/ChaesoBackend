@@ -72,6 +72,7 @@ class Order(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='orders')
     transporter = models.ForeignKey(Transporter, on_delete=models.CASCADE)
     products = models.ManyToManyField('Product')
+    quantity = models.IntegerField(default=1)
     date_order = models.DateField(auto_now_add=True, null=True, blank=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     status = models.CharField(max_length=50, null=True, blank=True)
@@ -89,7 +90,6 @@ class Product(models.Model):
     value = models.DecimalField(max_digits=10, decimal_places=2)
     weight_kg = models.CharField(max_length=100)
     photo = models.ImageField(upload_to='client_photos/', null=True, blank=True)
-    quantity = models.IntegerField(default=1)
 
     class Meta:
         verbose_name = 'Product'
