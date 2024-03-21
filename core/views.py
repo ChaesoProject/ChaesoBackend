@@ -154,12 +154,8 @@ class OrderViewSet(viewsets.ModelViewSet):
             transporters = models.Transporter.objects.all()
             transporter = choice(transporters)
 
-        # Obtém a lista de produtos e calcula o total_amount
-        products = self.request.data.get('products', [])
-        total_amount = sum(models.Product.objects.filter(id__in=products).values_list('value', flat=True))
-
         # Salva o pedido com os dados fornecidos
-        serializer.save(client_id=client_id, transporter=transporter, total_amount=total_amount, status="Seu pedido está sendo preparado")
+        serializer.save(client_id=client_id, transporter=transporter, status="Seu pedido está sendo preparado")
 
     def get_queryset(self):
         # Retorna todos os pedidos
