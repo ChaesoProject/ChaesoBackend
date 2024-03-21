@@ -158,6 +158,7 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer.save(client_id=client_id, transporter=transporter, status="Seu pedido está sendo preparado")
 
     def get_queryset(self):
-        # Retorna todos os pedidos
-        return self.queryset
+        # Filtra os pedidos apenas do cliente autenticado
+        client = self.request.user.client
+        return self.queryset.filter(client=client)
     
