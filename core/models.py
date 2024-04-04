@@ -75,6 +75,7 @@ class Order(models.Model):
     date_order = models.DateField(auto_now_add=True, null=True, blank=True)
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     status = models.CharField(max_length=50, null=True, blank=True)
+    delivery_date = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name = 'Order'
