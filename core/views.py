@@ -151,14 +151,14 @@ class OrderViewSet(viewsets.ModelViewSet):
         if transporter_id:
             transporter = get_object_or_404(models.Transporter, id=transporter_id)
         else:
+            # Se não houver ID de transportador fornecido, seleciona um aleatoriamente
             transporters = models.Transporter.objects.all()
             transporter = choice(transporters)
 
         # Salva o pedido com os dados fornecidos
-        serializer.save(client_id=client_id, transporter=transporter, status="Seu pedido está sendo preparado")
+        serializer.save(client_id=client_id, transporter=transporter, status="Seu pedido saiu para entrega e está a caminho do seu endereço")
 
     def get_queryset(self):
         # Filtra os pedidos apenas do cliente autenticado
         client = self.request.user.client
         return self.queryset.filter(client=client)
-    
