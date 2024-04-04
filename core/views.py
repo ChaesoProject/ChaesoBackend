@@ -188,21 +188,15 @@ class TransporterStatisticsViewSet(viewsets.ViewSet):
         transporter = request.user.transporter
         orders = models.Order.objects.filter(transporter=transporter)
 
-        # obtém o ano atual
-        current_year = datetime.now().year
-
         # calcula o total de entregas realizadas neste mês
-        total_deliveries_month = orders.filter(status="Pedido entregue", delivery_date__year=current_year, delivery_date__month=datetime.now().month).count()
-
-        # calcula o total de entregas realizadas neste ano
-        total_deliveries_year = orders.filter(status="Pedido entregue", delivery_date__year=current_year).count()
+        total_deliveries = orders.filter(status="Pedido entregue").count()
 
         # calcula o total do valor das entregas
         total_value = orders.filter(status="Pedido entregue").aggregate(total_value=Sum('total_amount'))
 
+        # retorna os resultados
         data = {
-            'total_deliveries_month': total_deliveries_month,
-            'total_deliveries_year': total_deliveries_year,
+            'total_deliveries': total_deliveries,
             'total_value': total_value['total_value']
         }
         return Response(data)
