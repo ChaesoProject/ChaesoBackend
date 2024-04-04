@@ -143,22 +143,26 @@ class OrderViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        # Obtém o ID do cliente fornecido na requisição
-        client_id = self.request.data.get('client')
+        # obtém o cliente associado ao usuário autenticado
+        client = self.request.user.client
 
-        # Obtém o transportador, fazendo um sorteio se não for fornecido na requisição
+        # obtém o transportador, fazendo um sorteio se não for fornecido na requisição
         transporter_id = self.request.data.get('transporter')
         if transporter_id:
             transporter = get_object_or_404(models.Transporter, id=transporter_id)
         else:
-            # Se não houver ID de transportador fornecido, seleciona um aleatoriamente
+            # se não houver ID de transportador fornecido, é feito o sorteio de um
             transporters = models.Transporter.objects.all()
             transporter = choice(transporters)
 
-        # Salva o pedido com os dados fornecidos
-        serializer.save(client_id=client_id, transporter=transporter, status="Seu pedido saiu para entrega e está a caminho do seu endereço")
+        serializer.save(client=client, transporter=transporter, status="Seu pedido saiu para entrega e está a caminho do seu endereço")
 
     def get_queryset(self):
-        # Filtra os pedidos apenas do cliente autenticado
-        client = self.request.user.client
-        return self.queryset.filter(client=client)
+        # verifica cliente associado ao usuário autenticado
+        try:
+            client = self.request.user.client
+            print("Cliente associado ao usuário autenticado:", client)
+            return self.queryset.filter(client=client)
+        except models.CustomUser.client.RelatedObjectDoesNotExist:
+            return self.queryset.none()
+
