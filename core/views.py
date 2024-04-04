@@ -158,11 +158,24 @@ class OrderViewSet(viewsets.ModelViewSet):
         serializer.save(client=client, transporter=transporter, status="Seu pedido saiu para entrega e está a caminho do seu endereço")
 
     def get_queryset(self):
-        # verifica cliente associado ao usuário autenticado
-        try:
-            client = self.request.user.client
-            print("Cliente associado ao usuário autenticado:", client)
-            return self.queryset.filter(client=client)
-        except models.CustomUser.client.RelatedObjectDoesNotExist:
+        # verifica se o usuário autenticado é um cliente
+        if hasattr(self.request.user, 'client'):
+            # se for cliente, retorna os pedidos associados a ele
+            try:
+                client = self.request.user.client
+                return self.queryset.filter(client=client)
+            except models.CustomUser.client.RelatedObjectDoesNotExist:
+                return self.queryset.none()
+        # verifica se o usuário autenticado é um transportador
+        elif hasattr(self.request.user, 'transporter'):
+            # se for transportador, retorna os pedidos atribuídos a ele
+            try:
+                transporter = self.request.user.transporter
+                return self.queryset.filter(transporter=transporter)
+            except models.CustomUser.transporter.RelatedObjectDoesNotExist:
+                return self.queryset.none()
+        else:
+            # se o usuário autenticado não for nem cliente nem transportador, retorna uma lista vazia
+            print("Não é cliente nem transportador")
             return self.queryset.none()
 
