@@ -109,3 +109,9 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+        
+
+class TransporterStatisticsSerializer(serializers.Serializer):
+    deliveries_per_month = serializers.IntegerField()
+    total_delivery_value = serializers.DecimalField(max_digits=10, decimal_places=2)
+

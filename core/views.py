@@ -6,6 +6,8 @@ from django_filters import rest_framework as filters
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.authtoken.models import Token
+from django.db.models import Count, Sum
+from datetime import datetime
 from random import choice
 from core import serializers, models
 
@@ -178,6 +180,31 @@ class OrderViewSet(viewsets.ModelViewSet):
             # se o usuário autenticado não for nem cliente nem transportador, retorna uma lista vazia
             print("Não é cliente nem transportador")
             return self.queryset.none()
+        
+    
+class TransporterStatisticsViewSet(viewsets.ViewSet):
+    permission_classes = [IsAuthenticated]
+
+    def list(self, request):
+        # verifica se o usuário autenticado é um transportador
+        if hasattr(request.user, 'transporter'):
+            # obtém o transportador associado ao usuário autenticado
+            transporter = request.user.transporter
+
+            # calcula a quantidade de entregas realizadas por mês e o total do valor das entregas
+            current_month = datetime.now().month
+            current_year = datetime.now().year
+            deliveries_per_month = models.Order.objects.filter(transporter=transporter, status="Pedido entregue", delivery_date__month=current_month, delivery_date__year=current_year).count()
+            total_delivery_value = models.Order.objects.filter(transporter=transporter, status="Pedido entregue", delivery_date__month=current_month, delivery_date__year=current_year).aggregate(Sum('value'))['value__sum']
+
+            # retorna os resultados
+            return Response({
+                'deliveries_per_month': deliveries_per_month,
+                'total_delivery_value': total_delivery_value
+            })
+        else:
+            # se o usuário autenticado não for um transportador, retorna uma mensagem de erro
+            return Response({'error': 'Usuário autenticado não é um transportador'}, status=status.HTTP_403_FORBIDDEN)    
 
 
 
